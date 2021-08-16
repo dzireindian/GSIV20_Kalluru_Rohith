@@ -1,0 +1,9 @@
+.container-mod{
+    margin-left: 0px;
+    margin-right: 0px;
+    max-width: none;
+}
+
+.bg-light{
+    background-color: "white";
+}
