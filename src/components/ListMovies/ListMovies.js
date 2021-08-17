@@ -1,6 +1,7 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import {Link} from 'react-router-dom';
+import { useSelector, useDispatch } from "react-redux";
 import "bootstrap/dist/css/bootstrap.min.css";
 import $ from "jquery";
 import Popper from "popper.js";
@@ -14,14 +15,10 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "./ListMovies.css";
 
 
-class ListMovies extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { loading: true, movies: [],search:false,searchMovies:[],searchString:" " };
-    // this.search = "";
-  }
+let state,setState,dispatch;
+    
 
-  searchMovie(query) {
+  function searchMovie(query) {
       query = query.split(" ");
       query = query.join("+");
       var requestOptions = {
@@ -36,12 +33,12 @@ class ListMovies extends Component {
       })
       .then((result) => {
         // ReactDOM.render(<SearchResult data={result.results}/>,document.getElementById('content'));
-        this.setState({...this.state,loading:false,searchMovies:result.results})
+        setState({...state,loading:false,searchMovies:result.results})
       })
       .catch(error => console.log('error', error));
-}
+    }
 
-  fetchMovies() {
+  function fetchMovies() {
     var requestOptions = {
       method: "GET",
       redirect: "follow",
@@ -56,28 +53,22 @@ class ListMovies extends Component {
         else return response.json();
       })
       .then((result) => {
-        this.setState({...this.state,loading: false, movies: result.results });
+        dispatch({type:"ADDMOVIES",payload:result.results})
+        setState({...state,loading: false});
       })
       .catch((error) => console.log("error", error));
   }
 
-  // componentWillUpdate(){
-  //   this.search = " ";
-  // }
-
-  // componentDidUpdate(){
-  //   if(this.state.search === false){
-  //       document.getElementById('search').value=" ";
-  //   }
-  // }
-
-  render() {
+  function ListMovies(props) {
     // var search =" ";
+    dispatch = useDispatch();
+    let movies = useSelector(state => state.listMovies);
+    [state,setState] = useState({ loading: (movies.length === 0),search:false,searchMovies:[],searchString:" " });
 
-    if (this.state.loading) {
-      if(this.state.movies.length === 0){ this.fetchMovies();}
-      console.log("search string =",this.state.searchString);
-      if(this.state.search){this.searchMovie(this.state.searchString)}
+    if (state.loading) {
+      if(movies.length === 0){ fetchMovies();}
+      console.log("search string =",state.searchString);
+      if(state.search){searchMovie(state.searchString)}
       return (
         <Lottie
           style={{ height: "100vh", width: "100%" }}
@@ -102,7 +93,7 @@ class ListMovies extends Component {
                         // document.getElementById('content'));
                         console.log("event string =",event.target.value)
                         // search = event.target.value;
-                        this.setState({...this.state,loading: true,search:true, searchString: event.target.value})
+                        setState({...state,loading: true,search:true, searchString: event.target.value})
                     }
                   }}
                   class="form-control me-2"
@@ -118,14 +109,13 @@ class ListMovies extends Component {
           </nav>
         </div>
         <div id="content">
-        {this.state.search?<SearchResult close={() => {
+        {state.search?<SearchResult close={() => {
           console.log('button clicked')
-          this.setState({...this.state,search: false,searchString:" "});
-        }} data={this.state.searchMovies} />:<MovieList movies={this.state.movies}/>}
+          setState({...state,search: false,searchString:" "});
+        }} data={state.searchMovies} />:<MovieList movies={movies}/>}
         </div>
       </div>
     );
   }
-}
 
 export default ListMovies;
