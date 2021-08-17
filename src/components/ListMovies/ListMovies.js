@@ -46,6 +46,24 @@ function MovieCard(props) {
   );
 }
 
+let  MoviesList = (props) =>{
+    return (<div class="row row-cols-2 row-cols-lg-5 g-2 g-lg-3" style={{marginTop: "1rem"}}>
+          {props.movies.map((movie) => {
+            return (
+              <MovieCard
+                data={movie}
+                title={movie.title}
+                image={movie.backdrop_path}
+                desc={movie.overview}
+                rating={movie.vote_average}
+              />
+            );
+          })}
+        </div>);
+  }
+
+
+
 class ListMovies extends Component {
   constructor(props) {
     super(props);
@@ -73,6 +91,7 @@ class ListMovies extends Component {
       .catch((error) => console.log("error", error));
   }
 
+
   render() {
     if (this.state.loading) {
       this.fetchMovies();
@@ -84,17 +103,22 @@ class ListMovies extends Component {
       );
     }
 
-    console.log("movies = ", this.state.movies);
+    // console.log("movies = ", this.state.movies);
+    let search = "";
 
     return (
       <div class="container container-mod">
         <div class="row">
           <nav class="navbar navbar-light bg-light border-bottom shadow rounded">
             <div class="position-relative container-fluid">
-              <form class="d-flex">
+              <form onSubmit={() => {console.log("submitted")}} class="d-flex">
                 <input
+                  onChange={event => {
+                    search = event.target.value;
+                    // console.log(event.target.value);
+                  }}
                   class="form-control me-2"
-                  style={{ backgroundColor: "grey" }}
+                  style={{ backgroundColor: "gainsboro", width:"60vh"}}
                   type="search"
                   placeholder="Search"
                   aria-label="Search"
@@ -106,18 +130,8 @@ class ListMovies extends Component {
             </div>
           </nav>
         </div>
-        <div class="row row-cols-2 row-cols-lg-5 g-2 g-lg-3" style={{marginTop: "1rem"}}>
-          {this.state.movies.map((movie) => {
-            return (
-              <MovieCard
-                data={movie}
-                title={movie.title}
-                image={movie.backdrop_path}
-                desc={movie.overview}
-                rating={movie.vote_average}
-              />
-            );
-          })}
+        <div id="content">
+        <MoviesList movies={this.state.movies}/>
         </div>
       </div>
     );
