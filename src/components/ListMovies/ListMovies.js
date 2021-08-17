@@ -17,8 +17,8 @@ import "./ListMovies.css";
 class ListMovies extends Component {
   constructor(props) {
     super(props);
-    this.state = { loading: true, movies: [],search:false,searchMovies:[] };
-    this.search = "";
+    this.state = { loading: true, movies: [],search:false,searchMovies:[],searchString:" " };
+    // this.search = "";
   }
 
   searchMovie(query) {
@@ -36,7 +36,7 @@ class ListMovies extends Component {
       })
       .then((result) => {
         // ReactDOM.render(<SearchResult data={result.results}/>,document.getElementById('content'));
-        this.setState(state => Object.assign(state,{search:true,searchMovies:result.results}))
+        this.setState({...this.state,loading:false,searchMovies:result.results})
       })
       .catch(error => console.log('error', error));
 }
@@ -56,18 +56,28 @@ class ListMovies extends Component {
         else return response.json();
       })
       .then((result) => {
-        this.setState({ loading: false, movies: result.results });
+        this.setState({...this.state,loading: false, movies: result.results });
       })
       .catch((error) => console.log("error", error));
   }
 
-  componentWillUpdate(){
-    this.search = " ";
-  }
+  // componentWillUpdate(){
+  //   this.search = " ";
+  // }
+
+  // componentDidUpdate(){
+  //   if(this.state.search === false){
+  //       document.getElementById('search').value=" ";
+  //   }
+  // }
 
   render() {
+    // var search =" ";
+
     if (this.state.loading) {
-      this.fetchMovies();
+      if(this.state.movies.length === 0){ this.fetchMovies();}
+      console.log("search string =",this.state.searchString);
+      if(this.state.search){this.searchMovie(this.state.searchString)}
       return (
         <Lottie
           style={{ height: "100vh", width: "100%" }}
@@ -84,14 +94,15 @@ class ListMovies extends Component {
           <nav class="navbar navbar-light bg-light border-bottom shadow rounded">
             <div class="position-relative container-fluid">
                 <input id="search"
-                  onChange={event => {
-                    this.search = event.target.value;
-                    console.log(event.target.value);
-                  }}
                   onKeyDown={event => {
                      if (event.key === 'Enter' || event.keyCode === 13) {
-                        console.log("search string =",this.search); 
-                        this.searchMovie(this.search)
+                        // console.log("search string =",this.search);
+                        // console.log("search string =",event.target.value);
+                        // ReactDOM.render(<Lottie style={{ height: "100vh", width: "100%" }}animationData={animationData}/>,
+                        // document.getElementById('content'));
+                        console.log("event string =",event.target.value)
+                        // search = event.target.value;
+                        this.setState({...this.state,loading: true,search:true, searchString: event.target.value})
                     }
                   }}
                   class="form-control me-2"
@@ -109,7 +120,7 @@ class ListMovies extends Component {
         <div id="content">
         {this.state.search?<SearchResult close={() => {
           console.log('button clicked')
-          this.setState({search: false});
+          this.setState({...this.state,search: false,searchString:" "});
         }} data={this.state.searchMovies} />:<MovieList movies={this.state.movies}/>}
         </div>
       </div>

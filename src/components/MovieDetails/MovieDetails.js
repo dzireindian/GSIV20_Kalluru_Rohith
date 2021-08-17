@@ -72,7 +72,7 @@ function MovieDetails(props){
       <div class="card-body">
       <div class="d-flex flex-column">
       <div class="d-flex flex-row position-relative">
-      <h2 class="card-title">{data.title}</h2>  <span class=" fs-3 position-absolute bottom-0 start-50 translate-middle-x ">Rating: {data.vote_average}</span>
+        <h2 class="card-title">{data.title}</h2>  <span class=" fs-3" style={{marginLeft:"2rem"}}>Rating: {data.vote_average}</span>
       </div>
         <p class="card-text"><small class="text-muted">Year: {data.release_date.split('-')[0]} | Directors: {directors} </small></p>
         <p class="card-text text-truncate" style={{width:"50%"}}>Cast: {actors}</p>

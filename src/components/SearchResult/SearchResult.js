@@ -11,7 +11,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 function SearchResult(props){
     return (<div class="card" style={{marginTop:"1rem"}}>
   <div class="card-header position-relative">
-    Search Result <button onClick={props.close} class="btn-close position-absolute top-50 end-0 translate-middle-y"></button>
+    <span class="fw-bolder">Search Result</span> <button onClick={props.close} class="btn-close position-absolute top-50 end-0 translate-middle-y"></button>
   </div>
   <div class="card-body">
     <MovieList movies={props.data}/>
