@@ -1,4 +1,4 @@
-#Instructions to run the project
+#Instructions to run the project#
 
 1. create .env file in the project root directory
 2. Include the following variables in the .env file.
@@ -8,7 +8,7 @@
 3. After setting up .env file, cd to the project directory in your terminal and enter "npm start"
 4. Voila the project is up and running
 
-#My coding style explanation
+#My coding style explanation#
 
 1. I used persisted redux state to fetch from the api once and use it through out the user session, that way we minimise the need for calling api for static data, ther by reducing the buffer time.
 2. I reused "MovieList" component for showing search results and upcoming movies list, there by increasing reusability of the component and reducing large amount of code to be rewritten.
