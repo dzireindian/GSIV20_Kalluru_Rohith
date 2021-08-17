@@ -1,75 +1,45 @@
 import React, { Component } from "react";
-import {Link} from 'react-router-dom'
+import ReactDOM from "react-dom";
+import {Link} from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import $ from "jquery";
 import Popper from "popper.js";
 import Lottie from "lottie-react";
+import SearchResult from "../SearchResult/SearchResult";
+import MovieList  from "../MovieList/MovieList";
 // import StarRatingComponent from "react-star-rating-component";
 import animationData from "../../LottieLoader.json";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./ListMovies.css";
 
-let jwt = require("jwt-simple");
-
-function MovieCard(props) {
-  return (
-    <div style={{ width: "20%", height: "2%" }} class="col">
-      <div class="card rounded-3">
-        <img
-          src={`https://www.themoviedb.org/t/p/w220_and_h330_face/${props.image}`}
-          class="card-img-top"
-          alt="..."
-        />
-        <div class="card-body">
-            <div class="container">
-              <div class="row">
-                <div class="col" style={{width:"10px"}}>
-                  <p class="text-truncate">{props.title}</p>
-                </div>
-                <div class="col">
-                  <span class="fw-bold">Rating : </span>
-                  {props.rating}
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <p class="text-truncate">{props.desc}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <a class="stretched-link" href={`/movie/${jwt.encode(props.data,process.env.REACT_APP_ENC_KEY)}`}
-          ></a>
-        </div>
-      </div>
-  );
-}
-
-let  MoviesList = (props) =>{
-    return (<div class="row row-cols-2 row-cols-lg-5 g-2 g-lg-3" style={{marginTop: "1rem"}}>
-          {props.movies.map((movie) => {
-            return (
-              <MovieCard
-                data={movie}
-                title={movie.title}
-                image={movie.backdrop_path}
-                desc={movie.overview}
-                rating={movie.vote_average}
-              />
-            );
-          })}
-        </div>);
-  }
-
-
 
 class ListMovies extends Component {
   constructor(props) {
     super(props);
-    this.state = { loading: true, movies: [] };
-    this.dataframe = null;
+    this.state = { loading: true, movies: [],search:false,searchMovies:[] };
+    this.search = "";
   }
+
+  searchMovie(query) {
+      query = query.split(" ");
+      query = query.join("+");
+      var requestOptions = {
+        method: 'GET',
+        redirect: 'follow'
+      };
+
+      fetch(`${process.env.REACT_APP_API_POINT}/search/movie?api_key=${process.env.REACT_APP_API_KEY}&query=${query}`, requestOptions)
+      .then((response) => {
+        if (!response.ok) throw new Error(response.status);
+        else return response.json();
+      })
+      .then((result) => {
+        // ReactDOM.render(<SearchResult data={result.results}/>,document.getElementById('content'));
+        this.setState(state => Object.assign(state,{search:true,searchMovies:result.results}))
+      })
+      .catch(error => console.log('error', error));
+}
 
   fetchMovies() {
     var requestOptions = {
@@ -91,6 +61,9 @@ class ListMovies extends Component {
       .catch((error) => console.log("error", error));
   }
 
+  componentWillUpdate(){
+    this.search = " ";
+  }
 
   render() {
     if (this.state.loading) {
@@ -104,18 +77,22 @@ class ListMovies extends Component {
     }
 
     // console.log("movies = ", this.state.movies);
-    let search = "";
 
     return (
       <div class="container container-mod">
         <div class="row">
           <nav class="navbar navbar-light bg-light border-bottom shadow rounded">
             <div class="position-relative container-fluid">
-              <form onSubmit={() => {console.log("submitted")}} class="d-flex">
-                <input
+                <input id="search"
                   onChange={event => {
-                    search = event.target.value;
-                    // console.log(event.target.value);
+                    this.search = event.target.value;
+                    console.log(event.target.value);
+                  }}
+                  onKeyDown={event => {
+                     if (event.key === 'Enter' || event.keyCode === 13) {
+                        console.log("search string =",this.search); 
+                        this.searchMovie(this.search)
+                    }
                   }}
                   class="form-control me-2"
                   style={{ backgroundColor: "gainsboro", width:"60vh"}}
@@ -123,7 +100,6 @@ class ListMovies extends Component {
                   placeholder="Search"
                   aria-label="Search"
                 />
-              </form>
               <div class="position-absolute top-50 end-0 translate-middle-y">
                 <Link to="/"><i class="bi bi-house-door-fill"></i></Link>
               </div>
@@ -131,7 +107,10 @@ class ListMovies extends Component {
           </nav>
         </div>
         <div id="content">
-        <MoviesList movies={this.state.movies}/>
+        {this.state.search?<SearchResult close={() => {
+          console.log('button clicked')
+          this.setState({search: false});
+        }} data={this.state.searchMovies} />:<MovieList movies={this.state.movies}/>}
         </div>
       </div>
     );
