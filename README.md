@@ -1,12 +1,13 @@
 #Instructions to run the project#
 
-1. create .env file in the project root directory
-2. Include the following variables in the .env file.
+1. cd to the project root directory in the terminal and do "npm install" to install all the necessary packages.
+2. create .env file in the project root directory.
+3. Include the following variables in the .env file.
 	* REACT_APP_API_KEY= [TMDB registered api key]
     * REACT_APP_API_POINT= "https://api.themoviedb.org/3" [TMDB api end point]
 	* REACT_APP_ENC_KEY= "@KR@" [Desired Encryption key of your choice]
-3. After setting up .env file, cd to the project directory in your terminal and enter "npm start"
-4. Voila the project is up and running
+4. After setting up .env file, cd to the project directory in your terminal and enter "npm start".
+5. Voila the project is up and running.
 
 #My coding style explanation#
 
